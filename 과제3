@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+      border: 1px solid #000;
+    }
+
+    button {
+      margin: 5px;
+      padding: 8px;
+      cursor: pointer;
+    }
+  </style>
+  <title>온라인 그림판</title>
+</head>
+<body>
+
+<canvas id="drawingCanvas" width="800" height="600"></canvas>
+<button onclick="setMode('pen')">펜</button>
+<button onclick="setMode('eraser')">지우개</button>
+
+<label for="penColor">펜 색상:</label>
+<input type="color" id="penColor" onchange="setPenColor(this.value)">
+
+<label for="eraserSize">지우개 크기:</label>
+<input type="range" id="eraserSize" min="1" max="50" value="10" onchange="setEraserSize(this.value)">
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const canvas = document.getElementById('drawingCanvas');
+    const context = canvas.getContext('2d');
+    let isDrawing = false;
+    let mode = 'pen';
+    let penColor = '#000';
+    let eraserSize = 10;
+
+    function startDrawing(e) {
+      isDrawing = true;
+      draw(e);
+    }
+
+    function stopDrawing() {
+      isDrawing = false;
+      context.beginPath();
+    }
+
+    function draw(e) {
+      if (!isDrawing) return;
+
+      context.lineWidth = (mode === 'eraser') ? eraserSize : 5;
+      context.lineCap = 'round';
+
+      context.strokeStyle = (mode === 'pen') ? penColor : '#fff'; // White color for eraser
+
+      context.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+      context.stroke();
+      context.beginPath();
+      context.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+    }
+
+    function setMode(newMode) {
+      mode = newMode;
+    }
+
+    function setPenColor(color) {
+      penColor = color;
+    }
+
+    function setEraserSize(size) {
+      eraserSize = size;
+    }
+
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mousemove', draw);
+  });
+</script>
+
+</body>
+</html>
